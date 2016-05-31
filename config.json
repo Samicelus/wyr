@@ -1,0 +1,6 @@
+{
+"mongodbPort": 27017,
+"httpPort": 23017,
+"weixinNotifyPort": 6002,
+"partner_key": "923f8c19733d208b8de55daf57a6278a"
+}
