@@ -3,7 +3,7 @@ var ObjectId = require('mongodb').ObjectID;
 var http = require('http');
 var url = require('url');
 var uuid = require('uuid');
-
+var moment = require('moment');
 var apiHandler= require('./apiHandler');
 var addressHandler= require('./addressHandler');
 var teacherHandler= require('./teacherHandler');
@@ -15,6 +15,7 @@ var youkuHandler= require('./youkuHandler');
 var orderHandler= require('./orderHandler');
 var messageHandler = require('./messageHandler');
 var courseTypeHandler =require('./courseTypeHandler');
+var trendHandler =require('./trendHandler');
 
 var md5 = require('md5');
 var querystring = require("querystring");
@@ -85,7 +86,7 @@ fs.readFile('./config.json', function (err, data) {
 				}else{console.log("result type = undefined");}
 			});
 
-		
+			/*
 			var rule = new schedule.RecurrenceRule();
 			rule.minute  = 28;
 			var j = schedule.scheduleJob(rule, function(){
@@ -96,7 +97,7 @@ fs.readFile('./config.json', function (err, data) {
 					console.log("this hour's new JsApiTicket got:"+JAT);
 					});
 				});
-			
+			*/
 			
 			http.createServer(function (request, response) {
 					
@@ -1503,7 +1504,6 @@ fs.readFile('./config.json', function (err, data) {
 												}										
 										}
 										
-										
 								}							
 							}
 						postData = "";
@@ -1550,10 +1550,6 @@ fs.readFile('./config.json', function (err, data) {
 			});	
 		}
 	});
-
-
-
-
 
 
 

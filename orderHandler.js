@@ -16,6 +16,7 @@ var httpRet = require('./httpRet');
 var WXPay = require('weixin-pay');
 var md5 = require('md5');
 var messageHandler = require('./messageHandler');
+var trendHandler =require('./trendHandler');
 
 var wxpay = WXPay({
     appid: 'wx6585c007ff6e5490',
@@ -630,6 +631,9 @@ function updateOrderInfo(db,out_trade_no,openid,transaction_id,total_fee){
 								//没有这个订单
 								console.log("can not find order out_trade_no:"+out_trade_no); 		
 								}else{
+									//获取订单信息以生成动态
+									var address1_id = bars[0].address1;
+									var courseName = bars[0].courseName;
 									//验证支付金额是否正确
 									if(bars[0].price != Number(total_fee)){
 										console.log("order price:"+bars[0].price+" does not match to paid total_fee:"+total_fee);
@@ -660,6 +664,8 @@ function updateOrderInfo(db,out_trade_no,openid,transaction_id,total_fee){
 												if(err){
 													console.log('error when modifying order state');
 													}else{
+														//添加动态
+														trendHandler.addTrend(db,address1_id);
 														console.log("order state modified");
 														}
 												});
