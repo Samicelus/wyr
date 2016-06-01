@@ -86,7 +86,7 @@ fs.readFile('./config.json', function (err, data) {
 				}else{console.log("result type = undefined");}
 			});
 
-			/*
+			
 			var rule = new schedule.RecurrenceRule();
 			rule.minute  = 28;
 			var j = schedule.scheduleJob(rule, function(){
@@ -97,7 +97,7 @@ fs.readFile('./config.json', function (err, data) {
 					console.log("this hour's new JsApiTicket got:"+JAT);
 					});
 				});
-			*/
+			
 			
 			http.createServer(function (request, response) {
 					
