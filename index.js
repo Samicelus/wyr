@@ -659,7 +659,29 @@ fs.readFile('./config.json', function (err, data) {
 												}
 										}
 
-										
+									
+									//删除地址
+									if(command == "deleteMyAddress"){
+										if(typeof(obj.openid)!='undefined'){
+											var openid = obj.openid;
+											if(typeof(obj.id)!='undefined'){
+												var id = obj.id;											
+												try {
+													addressHandler.deleteMyAddress(db,openid,id,response);
+													}catch(err){
+														var errorMsg = '\n'+ 'Error ' + new Date().toISOString() + ' ' + request.url+ '\n'+ err.stack || err.message || 'unknow error'+ '\n';
+														processHandler.errorLog(db,errorMsg,response);
+														}
+												}else{
+													var ret = JSON.stringify({result:'error',msg:'id is not defined'});
+													httpRet.writeResponse(response,ret);
+													}											
+											}else{
+												var ret = JSON.stringify({result:'error',msg:'openid is not defined'});
+												httpRet.writeResponse(response,ret);
+												}
+										}									
+									
 									//注册商户
 									if(command == "addMerchant"){
 										if(typeof(obj.openid)!='undefined'){
@@ -1152,6 +1174,42 @@ fs.readFile('./config.json', function (err, data) {
 												httpRet.writeResponse(response,ret);
 												}												
 										}
+									
+									//修改课程时间
+									if(command == "addCourseTime"){
+										console.log("addCourseTime...");
+										if(typeof(obj.openid)!='undefined'){
+											var openid = obj.openid;
+											if(typeof(obj.order_id)!='undefined'){
+												var order_id = obj.order_id;
+												if(typeof(obj.firstTime)!='undefined'){
+													var firstTime = obj.firstTime;
+													if(typeof(obj.interval)!='undefined'){
+														var interval = obj.interval;
+														try {
+															orderHandler.addCourseTime(db,openid,order_id,firstTime,interval,response);
+															}catch(err){
+																console.log(err);
+																var errorMsg = '\n'+ 'Error ' + new Date().toISOString() + ' ' + request.url+ '\n'+ err.stack || err.message || 'unknow error'+ '\n';
+																processHandler.errorLog(db,errorMsg,response);
+																}
+														}else{
+															var ret = JSON.stringify({result:'error',msg:'interval is not defined'});
+															orderHandler.writeResponse(response,ret);									
+															}
+													}else{
+														var ret = JSON.stringify({result:'error',msg:'firstTime is not defined'});
+														orderHandler.writeResponse(response,ret);									
+														}
+												}else{
+													var ret = JSON.stringify({result:'error',msg:'order_id is not defined'});
+													orderHandler.writeResponse(response,ret);									
+													}
+											}else{
+												var ret = JSON.stringify({result:'error',msg:'openid is not defined'});
+												orderHandler.writeResponse(response,ret);									
+												}
+										}	
 										
 									//查找教学
 									if(command == "findCourseByType"){

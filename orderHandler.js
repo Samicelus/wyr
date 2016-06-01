@@ -342,7 +342,51 @@ function findCourseByType(db,courseType,courseName,response){
 				}
 		});
 	}
-	
+
+/************************************************************
+函数名:addCourseTime(db,openid,order_id,firstTime,interval,response)
+参数及释义：
+db							操作的数据库对象
+firstTime
+interval
+response					用于返回get请求的对象体
+函数作用：
+    指定课程的首次上课时间和时间间隔
+时间：20160531
+************************************************************/
+function addCourseTime(db,openid,order_id,firstTime,interval,response){
+	db.collection("order", function(err, collection){
+		if(err){
+			console.log("error:"+err);
+			httpRet.alertMsg(response,'error',err,'0');
+			}else{
+				var condition = {openid:openid,_id:order_id};
+				collection.find(condition).toArray(function(err,bars){
+					if(err){
+						console.log("error:"+err);
+						httpRet.alertMsg(response,'error',err,'0');
+						}else{
+							if(bars.length == 0){
+								console.log("没有找到符合条件的教学");
+								httpRet.alertMsg(response,'error',"没有找到符合条件的教学",'0');
+								}else{
+									mod = {$set:{firstTime:firstTime,interval,interval}};
+									collection.update(condition,mod,function(err,data){
+										if(err){
+											console.log("error:"+err);
+											httpRet.alertMsg(response,'error',err,'0');
+											}else{
+												httpRet.alertMsg(response,'success',"修改教学时间成功",data);
+												}
+										});
+									
+									}
+							}
+					});
+				}
+		});
+	}
+
 /************************************************************
 函数名:createPrepayLink(db,id,response)
 参数及释义：
@@ -632,8 +676,14 @@ function updateOrderInfo(db,out_trade_no,openid,transaction_id,total_fee){
 								console.log("can not find order out_trade_no:"+out_trade_no); 		
 								}else{
 									//获取订单信息以生成动态
-									var address1_id = bars[0].address1;
-									var courseName = bars[0].courseName;
+									var address1_id = bars[0].address1;			//地址的id
+									var courseName = bars[0].courseName;		//课程名字
+									var totalCourse = bars[0].totalCourse;		//课数
+									var time = bars[0].time;					//授课时间
+									var firstTime= bars[0].firstTime;			//第一次授课时间（天）
+									var interval= bars[0].interval;				//授课间隔（天）
+									var teacher_openid = bars[0].openid;		//
+									var student_openid = bars[0].paidOpenid;	//
 									//验证支付金额是否正确
 									if(bars[0].price != Number(total_fee)){
 										console.log("order price:"+bars[0].price+" does not match to paid total_fee:"+total_fee);
@@ -665,7 +715,7 @@ function updateOrderInfo(db,out_trade_no,openid,transaction_id,total_fee){
 													console.log('error when modifying order state');
 													}else{
 														//添加动态
-														trendHandler.addTrend(db,address1_id);
+														trendHandler.addTrend(db,address1_id,courseName,totalCourse,time,teacher_openid,student_openid,out_trade_no,transaction_id);
 														console.log("order state modified");
 														}
 												});

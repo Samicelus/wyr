@@ -8,7 +8,30 @@ var serverIP = "119.29.92.190";
 var fs = require('fs');
 
 
-
+function getAddressName(db,id,cb){
+	db.collection("address", function(err, collection){
+		if(err){
+			console.log("error:"+err);
+			httpRet.alertMsg(response,'error',err,'0');
+			}else{
+				//查询该openid已有家庭住址
+				var condition = {_id:id};
+				collection.find(condition).toArray(function(err,bars){
+					if(err){
+						console.log("error:"+err);
+						httpRet.alertMsg(response,'error',err,'0');
+						}else{
+							if(bars.length == 0){
+								console.log("未找到对应地址");
+								httpRet.alertMsg(response,'error',"未找到对应地址",'0');
+								}else{
+									cb.call(bars[0].address);
+									}
+							}
+					});
+				}
+		});	
+}
 
 /************************************************************
 函数名:addHomeAddress(db,openid,address,lat,lnt,response)
@@ -293,6 +316,54 @@ function getAddressById(db,addressId,response){
 		});
 	}
 
+/************************************************************
+函数名:deleteMyAddress(db,openid,id,response)
+参数及释义：
+db							操作的数据库对象
+openid
+id
+response					用于返回get请求的对象体
+函数作用：
+    删除地址
+作者：徐思源
+时间：20151230
+************************************************************/
+function deleteMyAddress(db,openid,id,response){
+	db.collection("order", function(err, collection){
+		//先查询有该address的order
+		var condition = {address1:id,state:{$nin:[0,9]}};
+		collection.count(condition,function(err,data){
+			if(err){
+				console.log("error:"+err);
+				httpRet.alertMsg(response,'error',err,'0');
+				}else{
+					if(data != 0){
+						console.log("尚有未完成或未删除的课程中有该地址，无法删除");
+						httpRet.alertMsg(response,'error',"尚有未完成或未删除的课程中有该地址，无法删除",'0');
+						}else{
+							db.collection("address", function(err, collection){
+								var cond = {_id:id,openid:openid};
+								collection.remove(cond,function(err,data){
+									if(err){
+										console.log("error:"+err);
+										httpRet.alertMsg(response,'error',err,'0');
+										}else{
+											if(data.result.n == 0){
+												console.log("地址删除失败，操作者非该地址拥有者或没有找到对应地址");
+												httpRet.alertMsg(response,'error',"地址删除失败，操作者非该地址拥有者或没有找到对应地址",'0');
+												}else{
+													console.log("地址成功");
+													httpRet.alertMsg(response,'success',"地址成功",data);
+													}
+											}
+									});
+								});
+							}
+					}
+			});
+		});
+	}
+
 /****************地址相关*******************/
 exports.addHomeAddress = addHomeAddress;//
 exports.getMyHomeAddress = getMyHomeAddress;
@@ -301,3 +372,4 @@ exports.addShopAddress = addShopAddress;
 exports.getMyShopAddress = getMyShopAddress;
 exports.getShopAddress = getShopAddress;
 exports.getAddressById = getAddressById;
+exports.deleteMyAddress = deleteMyAddress;
