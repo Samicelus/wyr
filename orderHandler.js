@@ -1233,7 +1233,7 @@ function getTrend(db,openid,response){
 																									console.log(err); 
 																									}else{
 																										if(rst != null){
-																											console.log(crs.paidOpenid);
+																											console.log("can't find student openid:"+crs.paidOpenid+" for id:"+crs._id);
 																											}else{
 																											retObj.student = rst3.userName;			//学生名称
 																											retObj.phoneNum = rst3.phoneNum;		//学生电话
