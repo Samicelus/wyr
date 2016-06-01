@@ -1227,7 +1227,11 @@ function getTrend(db,openid,response){
 																					if(err){
 																						console.log(err); 
 																						}else{
-																							retObj.teacher = rst2.userName;		//老师名称
+																							if(rst2 == null){
+																								console.log("can't find teacher openid:"+crs.openid+" for id:"+crs._id);
+																								}else{
+																									retObj.teacher = rst2.userName;		//老师名称
+																								}
 																							collection.findOne({openid:crs.paidOpenid,userType:"student"},function(err,rst3){
 																								if(err){
 																									console.log(err); 
@@ -1235,8 +1239,9 @@ function getTrend(db,openid,response){
 																										if(rst3 == null){
 																											console.log("can't find student openid:"+crs.paidOpenid+" for id:"+crs._id);
 																											}else{
-																											retObj.student = rst3.userName;			//学生名称
-																											retObj.phoneNum = rst3.phoneNum;		//学生电话
+																												retObj.student = rst3.userName;			//学生名称
+																												retObj.phoneNum = rst3.phoneNum;		//学生电话
+																												}
 																											retObj.day = convertDay(crs.day);		//星期
 																											retObj.time = crs.time;					//时间
 																											retObj.process = crs.currentCourse +"/"+crs.totalCourse;		//进度
@@ -1245,8 +1250,7 @@ function getTrend(db,openid,response){
 																											index++;
 																											if(len == index){
 																												httpRet.alertMsg(response,'success','查询成功',retArr);
-																												}	
-																											}
+																												}
 																										}
 																								});
 																							}
