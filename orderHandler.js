@@ -1232,16 +1232,20 @@ function getTrend(db,openid,response){
 																								if(err){
 																									console.log(err); 
 																									}else{
-																										retObj.student = rst3.userName;			//学生名称
-																										retObj.phoneNum = rst3.phoneNum;		//学生电话
-																										retObj.day = convertDay(crs.day);		//星期
-																										retObj.time = crs.time;					//时间
-																										retObj.process = crs.currentCourse +"/"+crs.totalCourse;		//进度
-																										retObj.orderId = crs._id;				//课程id
-																										retArr.push(retObj);
-																										index++;
-																										if(len == index){
-																											httpRet.alertMsg(response,'success','查询成功',retArr);
+																										if(rst == null){
+																											console.log(crs.paidOpenid);
+																											}else{
+																											retObj.student = rst3.userName;			//学生名称
+																											retObj.phoneNum = rst3.phoneNum;		//学生电话
+																											retObj.day = convertDay(crs.day);		//星期
+																											retObj.time = crs.time;					//时间
+																											retObj.process = crs.currentCourse +"/"+crs.totalCourse;		//进度
+																											retObj.orderId = crs._id;				//课程id
+																											retArr.push(retObj);
+																											index++;
+																											if(len == index){
+																												httpRet.alertMsg(response,'success','查询成功',retArr);
+																												}	
 																											}
 																										}
 																								});
