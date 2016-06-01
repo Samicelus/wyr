@@ -619,7 +619,7 @@ db							操作的数据库对象
 openid						下单者的openid
 response					用于返回get请求的对象体
 函数作用：
-    查找该openid下的所有已支付订单
+    查找该openid下的所有已退款订单
 作者：徐思源
 时间：20160203
 ************************************************************/
@@ -714,8 +714,6 @@ function updateOrderInfo(db,out_trade_no,openid,transaction_id,total_fee){
 												if(err){
 													console.log('error when modifying order state');
 													}else{
-														//添加动态
-														trendHandler.addTrend(db,address1_id,courseName,totalCourse,time,teacher_openid,student_openid,out_trade_no,transaction_id);
 														console.log("order state modified");
 														}
 												});
@@ -1178,7 +1176,122 @@ function getMyPaidCourse(db,openid,response){
 				}
 		});
 	}
-	
+
+/************************************************************
+函数名:getTrend(db,openid,response)
+参数及释义：
+db							操作的数据库对象
+openid						老师的openid
+response					用于返回get请求的对象体
+函数作用：
+    老师查询课程表.
+作者：徐思源
+时间：20151013
+************************************************************/
+function getTrend(db,openid,response){
+	db.collection('order', function(err, collection) {
+		if(err){
+			console.log(err); 
+			}else{
+				var condition = {openid:openid,state:3};
+				collection.find(condition).sort({day:1,time:1}).toArray(function(err,bars){
+					if(err){
+						console.log(err); 
+						}else{
+							if(bars.length == 0){
+								//没有这个订单
+								console.log('没有课程');			
+								}else{
+									var courses = bars;
+									var len = courses.length;
+									var index = 0;
+									var retArr = new Array(); 
+									courses.map(function(crs){
+											db.collection('address', function(err, collection) {
+												if(err){
+													console.log(err); 
+													}else{
+														collection.findOne({_id:crs.address1},function(err,rst){
+															if(err){
+																console.log(err); 
+																}else{
+																	var retObj = new Object();
+																	//重组
+																	retObj.courseName = crs.courseName;		//课程名称
+																	retObj.address = rst.address;		//上课地址
+																	db.collection('user', function(err, collection) {
+																		if(err){
+																			console.log(err);  
+																			}else{
+																				collection.findOne({openid:crs.openid,userType:"teacher"},function(err,rst2){
+																					if(err){
+																						console.log(err); 
+																						}else{
+																							retObj.teacher = rst2.userName;		//老师名称
+																							collection.findOne({openid:crs.paidOpenid,userType:"student"},function(err,rst3){
+																								if(err){
+																									console.log(err); 
+																									}else{
+																										retObj.student = rst3.userName;			//学生名称
+																										retObj.phoneNum = rst3.phoneNum;		//学生电话
+																										retObj.day = convertDay(crs.day);		//星期
+																										retObj.time = crs.time;					//时间
+																										retObj.process = crs.currentCourse +"/"+crs.totalCourse;		//进度
+																										retObj.orderId = crs._id;				//课程id
+																										retArr.push(retObj);
+																										index++;
+																										if(len == index){
+																											httpRet.alertMsg(response,'success','查询成功',retArr);
+																											}
+																										}
+																								});
+																							}
+																					});
+																				}
+																		});
+																	}
+															});
+														}
+												});	
+										});
+									}
+							}
+					});
+				}
+		});	
+	}
+
+function convertDay(day){
+	var retDay = "";
+	switch(day){
+		case "1":
+			retDay = "星期一";
+			break;
+		case "2":
+			retDay = "星期二";
+			break;
+		case "3":
+			retDay = "星期三";
+			break;
+		case "4":
+			retDay = "星期四";
+			break;
+		case "5":
+			retDay = "星期五";
+			break;
+		case "6":
+			retDay = "星期六";
+			break;
+		case "7":
+			retDay = "星期日";
+			break;
+		default:
+			retDay = "时间出错：day数据-"+day;
+			break;
+		}
+	return retDay;
+}
+
 exports.addCourse = addCourse;
 exports.delectCourse = delectCourse;
 exports.getMyCourse = getMyCourse;
@@ -1195,6 +1308,7 @@ exports.checkCourse = checkCourse;
 exports.getCourseInfo = getCourseInfo;
 exports.findInterestCourse = findInterestCourse;
 exports.getMyPaidCourse = getMyPaidCourse;
+exports.getTrend = getTrend;
 
 exports.getOrderInfo = getOrderInfo;
 exports.getAllMyOrder = getAllMyOrder;

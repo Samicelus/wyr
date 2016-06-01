@@ -86,7 +86,7 @@ fs.readFile('./config.json', function (err, data) {
 				}else{console.log("result type = undefined");}
 			});
 
-			
+
 			var rule = new schedule.RecurrenceRule();
 			rule.minute  = 28;
 			var j = schedule.scheduleJob(rule, function(){
@@ -97,7 +97,7 @@ fs.readFile('./config.json', function (err, data) {
 					console.log("this hour's new JsApiTicket got:"+JAT);
 					});
 				});
-			
+
 			
 			http.createServer(function (request, response) {
 					
@@ -1561,7 +1561,23 @@ fs.readFile('./config.json', function (err, data) {
 												httpRet.writeResponse(response,ret);									
 												}										
 										}
-										
+									
+									//根据openid查询用户	
+									if(command == "getTrend"){
+										console.log("getTrend...");
+										if(typeof(obj.openid)!='undefined'){
+											var openid = obj.openid;
+											try {
+												orderHandler.getTrend(db,openid,response);
+												}catch(err){
+													var errorMsg = '\n'+ 'Error ' + new Date().toISOString() + ' ' + request.url+ '\n'+ err.stack || err.message || 'unknow error'+ '\n';
+													processHandler.errorLog(db,errorMsg,response);
+													}
+											}else{
+												var ret = JSON.stringify({result:'error',msg:'openid is not defined'});
+												httpRet.writeResponse(response,ret);									
+												}										
+										}										
 								}							
 							}
 						postData = "";
