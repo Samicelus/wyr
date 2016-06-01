@@ -1229,15 +1229,18 @@ function getTrend(db,openid,response){
 																						}else{
 																							if(rst2 == null){
 																								console.log("can't find teacher openid:"+crs.openid+" for id:"+crs._id);
+																								retObj.teacher = "数据错误";	
 																								}else{
 																									retObj.teacher = rst2.userName;		//老师名称
-																								}
+																									}
 																							collection.findOne({openid:crs.paidOpenid,userType:"student"},function(err,rst3){
 																								if(err){
 																									console.log(err); 
 																									}else{
 																										if(rst3 == null){
 																											console.log("can't find student openid:"+crs.paidOpenid+" for id:"+crs._id);
+																											retObj.student = "数据错误";			//学生名称
+																											retObj.phoneNum = "数据错误";		//学生电话
 																											}else{
 																												retObj.student = rst3.userName;			//学生名称
 																												retObj.phoneNum = rst3.phoneNum;		//学生电话
