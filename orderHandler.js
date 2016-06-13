@@ -25,7 +25,6 @@ var wxpay = WXPay({
     pfx: fs.readFileSync('./cert/apiclient_cert.p12'), //微信商户平台证书
 });
 
-
 var partner_key = '923f8c19733d208b8de55daf57a6278a';
 
 /*

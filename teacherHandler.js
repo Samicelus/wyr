@@ -1,7 +1,8 @@
 var uuid = require('uuid');
 var http = require('http');
 var https = require('https');
-var httpRet = require('./httpRet')
+var httpRet = require('./httpRet');
+var jwtHandler = require('./jwtHandler');
 var crypto = require('crypto');
 var str_tmp ="";
 var serverIP = "119.29.92.190";
@@ -297,7 +298,7 @@ function loginTeacher(db,openid,response){
 			httpRet.alertMsg(response,'error',err,'0');
 			}else{
 				var condition = {openid:openid,userType:"teacher"};
-				collection.find(condition).toArray(function(err,bars){
+				collection.find(condition,{openid:0}).toArray(function(err,bars){
 					if(err){
 						console.log("error:"+err);
 						httpRet.alertMsg(response,'error',err,'0');
@@ -307,7 +308,9 @@ function loginTeacher(db,openid,response){
 								httpRet.alertMsg(response,'error',"登录失败,尚未注册为老师",'0');
 								}else{
 									console.log("老师登录成功");
-									httpRet.alertMsg(response,'success',"老师登录成功",bars);
+									var retData = bars[0];
+									retData.jwt = jwtHandler.generatejwt({openid:openid,userType:"teacher"});
+									httpRet.alertMsg(response,'success',"老师登录成功",retData);
 									}
 							}
 					});

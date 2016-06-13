@@ -16,7 +16,7 @@ var orderHandler= require('./orderHandler');
 var messageHandler = require('./messageHandler');
 var courseTypeHandler =require('./courseTypeHandler');
 var trendHandler =require('./trendHandler');
-
+var jwtHandler = require('./jwtHandler');
 var md5 = require('md5');
 var querystring = require("querystring");
 var schedule = require("node-schedule");
@@ -99,10 +99,8 @@ fs.readFile('./config.json', function (err, data) {
 				});
 
 			
-			http.createServer(function (request, response) {
-					
-					request.setEncoding("utf8");
-					
+			http.createServer(function (request, response) {					
+					request.setEncoding("utf8");					
 					var postData = "";
 					
 					request.addListener("data", function(postDataChunk) {
