@@ -1,9 +1,5 @@
 var jwt = require('jwt-simple');
 var secret = 'oPque1jZz24Waa7seq2QRza';
-var decoded = jwt.decode(token, secret);
-
-console.log('The decodede data is: '+JSON.stringify(decoded));
-
 
 /************************************************************
 函数名：generateJwt(payload)
