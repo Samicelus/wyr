@@ -109,7 +109,7 @@ fs.readFile('./config.json', function (err, data) {
 						});
 						
 					request.addListener("end", function() {
-						
+						console.log("header: "+request.headers);
 						//处理postData
 						var data = querystring.parse(postData).data;
 						if(typeof(data)!= "undefined"){
