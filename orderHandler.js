@@ -22,7 +22,7 @@ var wxpay = WXPay({
     appid: 'wx6585c007ff6e5490',
     mch_id: '1298263001',
     partner_key: '923f8c19733d208b8de55daf57a6278a', //微信商户平台API密钥
-    pfx: fs.readFileSync('./cert/apiclient_cert.p12'), //微信商户平台证书
+    pfx: ""//fs.readFileSync('./cert/apiclient_cert.p12'), //微信商户平台证书
 });
 
 var partner_key = '923f8c19733d208b8de55daf57a6278a';

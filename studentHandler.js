@@ -267,7 +267,7 @@ function loginStudent(db,openid,response){
 								}else{
 									console.log("学生登录成功");
 									var retData = bars[0];
-									retData.jwt = jwtHandler.generatejwt({openid:openid,userType:"student"});
+									retData.jwt = jwtHandler.generateJwt({openid:openid,userType:"student"});
 									httpRet.alertMsg(response,'success',"学生登录成功",retData);
 									}
 							}

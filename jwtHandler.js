@@ -21,25 +21,29 @@ function generateJwt(payload){
 作者：徐思源
 时间：20160613
 ************************************************************/
-function checkJwt(token,db){
+function checkJwt(token,db,cb){
 	var decoded = jwt.decode(token, secret);
+	console.log('decoded:'+JSON.stringify(decoded));
 	var openid = decoded.openid;
 	var userType = decoded.userType;
 	db.collection("user", function(err, collection){
 		if(err){
 			console.log("error:"+err);
-			return false;
+			cb(false);
 			}else{
 				var condition = {openid:openid,userType:userType};
+				//console.log(condition);
 				collection.find(condition).toArray(function(err,bars){
 					if(err){
 						console.log("error:"+err);
-						return false;
+						cb(false);
 						}else{
+							//console.log(bars);
+							//console.log(bars.length);
 							if(bars.length == 0){
-								return false;
+								cb(false);
 								}else{
-									return decoded;
+									cb(decoded);
 									}
 							}
 					});

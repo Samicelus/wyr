@@ -309,7 +309,7 @@ function loginTeacher(db,openid,response){
 								}else{
 									console.log("老师登录成功");
 									var retData = bars[0];
-									retData.jwt = jwtHandler.generatejwt({openid:openid,userType:"teacher"});
+									retData.jwt = jwtHandler.generateJwt({openid:openid,userType:"teacher"});
 									httpRet.alertMsg(response,'success',"老师登录成功",retData);
 									}
 							}
