@@ -996,8 +996,9 @@ fs.readFile('./config.json', function (err, data) {
 																						var time = obj.time;
 																						if(typeof(obj.note)!="undefined"){
 																							var note = obj.note;
+																							var imgUrl = obj.imgUrl;
 																						try {
-																							orderHandler.addCourse(db,openid,courseType,courseName,homeService,address1,address2,price,courseLength,totalCourse,trail,day,time,note,response);
+																							orderHandler.addCourse(db,openid,courseType,courseName,homeService,address1,address2,price,courseLength,totalCourse,trail,day,time,note,imgUrl,response);
 																							}catch(err){
 																								var errorMsg = '\n'+ 'Error ' + new Date().toISOString() + ' ' + request.url+ '\n'+ err.stack || err.message || 'unknow error'+ '\n';
 																								processHandler.errorLog(db,errorMsg,response);

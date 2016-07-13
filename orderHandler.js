@@ -57,13 +57,14 @@ trail						试听课
 day							星期几
 time						上课时间段
 note						备注
+imgUrl						图片链接
 response					用于返回get请求的对象体
 函数作用：
     添加教学，添加前先查看state为1或2
 作者：徐思源
 时间：20160112
 ************************************************************/
-function addCourse(db,openid,courseType,courseName,homeService,address1,address2,price,courseLength,totalCourse,trail,day,time,note,response){
+function addCourse(db,openid,courseType,courseName,homeService,address1,address2,price,courseLength,totalCourse,trail,day,time,note,imgUrl,response){
 	db.collection("order", function(err, collection){
 		if(err){
 			console.log("error:"+err);
@@ -81,7 +82,7 @@ function addCourse(db,openid,courseType,courseName,homeService,address1,address2
 								httpRet.alertMsg(response,'error',"未审核课程达到10个，请删除失效课程或者等待审核成功。",'0');	
 								}else{
 									var xid = uuid.v4();
-									var course = {_id:xid,openid:openid,courseName:courseName,courseType:courseType,homeService:homeService,address1:address1,address2:address2,price:price,courseLength:courseLength,totalCourse:totalCourse,trail:trail,day:day,time:time,note:note,state:1};
+									var course = {_id:xid,openid:openid,courseName:courseName,courseType:courseType,homeService:homeService,address1:address1,address2:address2,price:price,courseLength:courseLength,totalCourse:totalCourse,trail:trail,day:day,time:time,note:note,imgUrl:imgUrl,state:1};
 									collection.insert(course,function(err,data){
 										if(err){
 											console.log("error:"+err);
