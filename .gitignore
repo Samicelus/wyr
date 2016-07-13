@@ -1,5 +1,6 @@
 .idea
 .DS_Store
+cert
 node_modules
 config.production
 cert
