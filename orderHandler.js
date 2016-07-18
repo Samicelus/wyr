@@ -36,6 +36,7 @@ state:
 3		已支付
 4		已完成
 9		已完结
+10		已评价
 */
 
 
@@ -1036,6 +1037,67 @@ function checkCourse(db,openid,id,score,response){
 		});
 	}
 
+function finishCourseComment(db,courseId,content,response){
+	//查看订单是否已完结
+	db.collection('order',function(err,collection){
+		if(err){
+			httpRet.alertMsg(response,'error',err,'0');
+			}else{
+				var condition = {_id:courseId};
+				collection.find(condition).toArray(function(err,bars){
+					if(err){
+						httpRet.alertMsg(response,'error',err,'0');
+						}else{
+							if(bars.length == 0){
+								httpRet.alertMsg(response,'error','订单信息有误','0');
+								}else{
+									var state = bars[0].state;
+									var teacherOpenid = bars[0].openid;
+									var score = bars[0].score;
+									var avgScore = getAvg(score);
+									if(state != 9){
+										httpRet.alertMsg(response,'error','订单不在已结束状态，无法添加评价','0');
+										}else{
+											//修改订单状态为已评价
+											collection.update(condition,{$set:{state:10}},function(err,date){
+												if(err){
+													httpRet.alertMsg(response,'error',err,'0');
+													}else{
+														db.collection('course_comment',function(err,collection){
+															if(err){
+																httpRet.alertMsg(response,'error',err,'0');
+																}else{
+																	var xid = uuid.v4();
+																	var course_comment = {_id:xid,teacherOpenid:teacherOpenid,course_id:courseId,content:content,avgScore:avgScore,state:1};
+																	collection.insert(course_comment,function(err,data){
+																		if(err){
+																			httpRet.alertMsg(response,'error',err,'0');
+																			}else{
+																				httpRet.alertMsg(response,'success',"评价成功",data);
+																				//向老师发送评价通知
+																				messageHandler.sendCommentMessage(db,xid,content,avgScore);
+																				}
+																		});
+																	}
+															});
+														}
+												});
+											}
+									}
+							}
+					});
+				}
+	});
+}
+
+function getAvg(score){
+	var total = 0;
+	for(var i in score){
+		total += Number(score[i]);
+		}
+	return total/(score.length);
+}
+
 /************************************************************
 函数名:getCourseInfo(db,id,response)
 参数及释义：
@@ -1317,6 +1379,7 @@ exports.getAllMyReceivedOrder = getAllMyReceivedOrder;
 exports.getAllMyPaidOrder = getAllMyPaidOrder;
 exports.startCheckCourse = startCheckCourse;
 exports.checkCourse = checkCourse;
+exports.finishCourseComment = finishCourseComment;
 exports.getCourseInfo = getCourseInfo;
 exports.findInterestCourse = findInterestCourse;
 exports.getMyPaidCourse = getMyPaidCourse;

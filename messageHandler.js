@@ -451,7 +451,7 @@ function sendTeacherAuthMessage(db,openid,userName){
 																	var myDate=getChineseDate();
 																	var postData = new Object();
 																	postData.touser = adminOpenid;
-																	postData.template_id = '';
+																	postData.template_id = 'xM3bEIamKblB24NzqOVyPsKm9RUo8S9sykcCdV-BHR8';
 																	postData.url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6585c007ff6e5490&redirect_uri=http://www.wanyirart.cc/modTeacherState.html?teacherId='+teacherId+'&response_type=code&scope=snsapi_userinfo';
 																	postData.topcolor = "#FF0000";
 																	postData.data = new Object();
@@ -624,7 +624,7 @@ function applyShopAddress(db,openid,shopAddressId,util,response){
 																					var myDate=getChineseDate();
 																					var postData = new Object();
 																					postData.touser = toUser;
-																					postData.template_id = '';
+																					postData.template_id = 'LyI-zIvjEow1gCEf4H4I0NORAyeRkwQ_qbjqnKAZvuE';
 																					postData.url = 'http://www.wanyirart.cc/addressApply/addressApply.html?phoneNum='+phoneNum+'&userName='+userName+'&address='+address+'&util='+util+'&shopAddressId='+shopAddressId+'&ownerOpenid='+toUser+'&applicantOpenid='+openid;
 																					postData.topcolor = "#FF0000";
 																					postData.data = new Object();
@@ -671,14 +671,109 @@ function applyShopAddress(db,openid,shopAddressId,util,response){
 				}
 		});
 	}
-	
+
+function sendCommentMessage(db,xid,content,avgScore){
+	console.log("sendCommentMessage...");
+	//首先获取AccessToken
+	db.collection('api', function(err, collection) {
+		if(err){
+			console.log(err);
+			}else{
+				var condition = {appid:"wx6585c007ff6e5490"};
+				collection.find(condition).toArray(function(err,bars){
+					if(err){
+						console.log(err);
+						}else{
+							if(bars.length == 0){
+								console.log('appid not found');
+								}else{
+									var AT = bars[0].access_token;
+									//接下来通过xid获取课程信息
+									db.collection('order', function(err, collection) {
+										if(err){
+											console.log(err);
+											}else{
+												var condition = {_id:xid,state:10};
+												collection.find(condition).toArray(function(err,bars){
+													if(err){
+														console.log(err);
+														}else{
+															if(bars.length == 0){
+																console.log('order not found'); 
+																}else{
+																	var teacherOpenid = bars[0].openid;
+																	var courseName = bars[0].courseName;
+																	var studentOpenid = bars[0].paidOpenid;
+																	//接下来通过teacherOpenid获取学生姓名以及联系方式
+																	db.collection('user', function(err, collection){
+																		if(err){
+																			console.log(err);
+																			}else{
+																				var condition = {openid:studentOpenid,userType:'student'};
+																				collection.find(condition).toArray(function(err,bars){
+																					if(err){
+																						console.log(err);
+																						}else{
+																							if(bars.length == 0){
+																								console.log('teacher with this openid not found'); 
+																								}else{
+																									var studentName = bars[0].userName;
+																									var studentPhoneNum = bars[0].phoneNum;
+																									//发送消息
+																									var postData = new Object();
+																									postData.touser = teacherOpenid;
+																									postData.template_id = '';
+																									postData.url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6585c007ff6e5490&redirect_uri=http://www.wanyirart.cc/viemComment.html?courseId='+xid+'&response_type=code&scope=snsapi_userinfo';
+																									postData.topcolor = "#FF0000";
+																									postData.data = new Object();
+																									postData.data.first = new Object();
+																									postData.data.first.value = '你的已完结课程有了新评价！';
+																									postData.data.first.color = "#173177";
+																									postData.data.keyword1 = new Object();
+																									postData.data.keyword1.value = studentName;
+																									postData.data.keyword1.color = "#173177";
+																									postData.data.keyword2 = new Object();
+																									postData.data.keyword2.value = courseName;
+																									postData.data.keyword2.color = "#173177";
+																									postData.data.keyword3 = new Object();
+																									postData.data.keyword3.value = avgScore;
+																									postData.data.keyword3.color = "#173177";
+																									postData.data.keyword4 = new Object();
+																									postData.data.keyword4.value = content;
+																									postData.data.keyword4.color = "#173177";
+																									postData.data.remark = new Object();
+																									postData.data.remark.value = "感谢您的使用";
+																									postData.data.remark.color = "#173177";
+																									console.log(JSON.stringify(postData));
+																									sendPostDataCallback(AT,postData,function(receivedData){
+																										console.log(receivedData); 
+																									});
+																									}
+																							}
+																					});
+																				}
+																		});
+																	}
+															}
+													});
+												}
+										});	
+									}
+							}
+					});
+				}
+		});		
+}
+
+
+
 exports.sendCourseAuthMessage = sendCourseAuthMessage;
 exports.sendOrderMessage = sendOrderMessage;
 exports.sendCheckCourseMessage = sendCheckCourseMessage;
 exports.sendTeacherAuthMessage = sendTeacherAuthMessage;
 exports.sendTeacherAuthResult = sendTeacherAuthResult;
 exports.applyShopAddress = applyShopAddress;
-
+exports.sendCommentMessage = sendCommentMessage;
 	
 //向微信发送post请求，回调模式
 function sendPostDataCallback(access_token,postData,callback){
