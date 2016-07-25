@@ -5,7 +5,7 @@ var serverPort = 6001;
 var fs = require('fs');
 var querystring = require("querystring");
 
-var adminOpenid = 'o3EplszxRCtPF9VMsnWENqYgPn8o';//管理员01的openid 'o3EplszxRCtPF9VMsnWENqYgPn8o' sam:'o3Epls2TMaiah_iI-GLwi9CxVKeQ'
+var adminOpenid = ['o3EplszxRCtPF9VMsnWENqYgPn8o','o3Epls-rH2R0l-2QU5az49bgwGlE'];//管理员01的openid 'o3EplszxRCtPF9VMsnWENqYgPn8o' 熊佳树:'o3Epls-rH2R0l-2QU5az49bgwGlE' sam:'o3Epls2TMaiah_iI-GLwi9CxVKeQ'
 	
 /************************************************************
 函数名:sendCourseAuthMessage(db,xid)	
@@ -68,39 +68,42 @@ function sendCourseAuthMessage(db,xid){
 																									var teacherName = bars[0].userName;
 																									var teacherPhoneNum = bars[0].phoneNum;
 																									if(addressId == 'none'){
-																										var address = '上门授课';
-																										//发送消息
-																										var postData = new Object();
-																										postData.touser = adminOpenid;
-																										postData.template_id = 'XSbxGzGVNIN9_E9jkiVkFo2qPjPs6rZsQNkCPtF5hWs';
-																										postData.url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6585c007ff6e5490&redirect_uri=http://www.wanyirart.cc/authCourse.html?courseId='+xid+'&response_type=code&scope=snsapi_userinfo';
-																										postData.topcolor = "#FF0000";
-																										postData.data = new Object();
-																										postData.data.first = new Object();
-																										postData.data.first.value = '新课程待审核';
-																										postData.data.first.color = "#173177";
-																										postData.data.keyword1 = new Object();
-																										postData.data.keyword1.value = courseType;
-																										postData.data.keyword1.color = "#173177";
-																										postData.data.keyword2 = new Object();
-																										postData.data.keyword2.value = teacherName;
-																										postData.data.keyword2.color = "#173177";
-																										postData.data.keyword3 = new Object();
-																										postData.data.keyword3.value = teacherPhoneNum;
-																										postData.data.keyword3.color = "#173177";
-																										postData.data.keyword4 = new Object();
-																										postData.data.keyword4.value = day;
-																										postData.data.keyword4.color = "#173177";
-																										postData.data.keyword5 = new Object();
-																										postData.data.keyword5.value = address;
-																										postData.data.keyword5.color = "#173177";
-																										postData.data.remark = new Object();
-																										postData.data.remark.value = "点击查看课程详情并审核";
-																										postData.data.remark.color = "#173177";
-																										console.log(JSON.stringify(postData));
-																										sendPostDataCallback(AT,postData,function(receivedData){
-																											console.log(receivedData); 
-																											});
+																										for(var i in adminOpenid){
+																											var address = '上门授课';
+																											//发送消息
+																											var postData = new Object();
+																											postData.touser = adminOpenid[i];
+																											postData.template_id = 'XSbxGzGVNIN9_E9jkiVkFo2qPjPs6rZsQNkCPtF5hWs';
+																											postData.url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx6585c007ff6e5490&redirect_uri=http://www.wanyirart.cc/authCourse.html?courseId='+xid+'&response_type=code&scope=snsapi_userinfo';
+																											postData.topcolor = "#FF0000";
+																											postData.data = new Object();
+																											postData.data.first = new Object();
+																											postData.data.first.value = '新课程待审核';
+																											postData.data.first.color = "#173177";
+																											postData.data.keyword1 = new Object();
+																											postData.data.keyword1.value = courseType;
+																											postData.data.keyword1.color = "#173177";
+																											postData.data.keyword2 = new Object();
+																											postData.data.keyword2.value = teacherName;
+																											postData.data.keyword2.color = "#173177";
+																											postData.data.keyword3 = new Object();
+																											postData.data.keyword3.value = teacherPhoneNum;
+																											postData.data.keyword3.color = "#173177";
+																											postData.data.keyword4 = new Object();
+																											postData.data.keyword4.value = day;
+																											postData.data.keyword4.color = "#173177";
+																											postData.data.keyword5 = new Object();
+																											postData.data.keyword5.value = address;
+																											postData.data.keyword5.color = "#173177";
+																											postData.data.remark = new Object();
+																											postData.data.remark.value = "点击查看课程详情并审核";
+																											postData.data.remark.color = "#173177";
+																											console.log(JSON.stringify(postData));
+																											sendPostDataCallback(AT,postData,function(receivedData){
+																												console.log(receivedData); 
+																												});																											
+																											}
+
 																										}else{
 																											//接下来通过addressId获取授课地址
 																											db.collection('address', function(err, collection){
