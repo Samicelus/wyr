@@ -1184,12 +1184,14 @@ function findInterestCourse(db,courseName,response){
 						console.log("error:"+err);
 						httpRet.alertMsg(response,'error',err,'0');
 						}else{
-							teachers = bars;
+							for(var i in bars){
+								teachers.push(bars[i].openid);
+							}
 							db.collection("order", function(err, collection){
 								if(err){
 									console.log("error:"+err);
 									httpRet.alertMsg(response,'error',err,'0');
-								}else{
+									}else{
 										var condition = {$or:[{courseName:{$regex:courseName}},{openid:{$in:teachers}}],state:2};
 										console.log(JSON.stringify(condition));
 										collection.find(condition).toArray(function(err,bars){
