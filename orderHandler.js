@@ -1191,7 +1191,7 @@ function findInterestCourse(db,courseName,response){
 									httpRet.alertMsg(response,'error',err,'0');
 								}else{
 										var condition = {$or:[{courseName:{$regex:courseName}},{openid:{$in:teachers}}],state:2};
-										console.log(condition);
+										console.log(JSON.stringify(condition));
 										collection.find(condition).toArray(function(err,bars){
 											if(err){
 												console.log("error:"+err);
