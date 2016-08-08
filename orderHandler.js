@@ -1171,32 +1171,50 @@ response					用于返回get请求的对象体
 时间：20160112
 ************************************************************/	
 function findInterestCourse(db,courseName,response){
-	db.collection("order", function(err, collection){
+	var teachers = [];
+	//查询教学老师名称及openid
+	db.collection("user",function(err,collection){
 		if(err){
 			console.log("error:"+err);
 			httpRet.alertMsg(response,'error',err,'0');
-		}else{
-				var courseReg = new RegExp(courseName);
-				var condition = {courseName:{$regex:courseReg},state:2};
-				console.log(condition);
-				collection.find(condition).toArray(function(err,bars){
+			}else{
+				var condition = {userName:{$regex:courseName},userType:"teacher"};
+				collection.find(condition,{userName:1,openid:1}).toArray(function(err,bars){
 					if(err){
 						console.log("error:"+err);
 						httpRet.alertMsg(response,'error',err,'0');
 						}else{
-							console.log(JSON.stringify(bars));
-							console.log("length:"+bars.length);
-							if(bars.length == 0){
-								console.log("没有找到符合条件的教学");
-								httpRet.alertMsg(response,'error',"没有找到符合条件的教学",'0');
+							teachers = bars;
+							db.collection("order", function(err, collection){
+								if(err){
+									console.log("error:"+err);
+									httpRet.alertMsg(response,'error',err,'0');
 								}else{
-									console.log("查询成功");
-									httpRet.alertMsg(response,'success',"查询成功",bars);
-									}
-							}
-					});
-				}
-		});
+										var condition = {$or:[{courseName:{$regex:courseName}},{openid:{$in:teachers}}],state:2};
+										console.log(condition);
+										collection.find(condition).toArray(function(err,bars){
+											if(err){
+												console.log("error:"+err);
+												httpRet.alertMsg(response,'error',err,'0');
+												}else{
+													console.log(JSON.stringify(bars));
+													console.log("length:"+bars.length);
+													if(bars.length == 0){
+														console.log("没有找到符合条件的教学");
+														httpRet.alertMsg(response,'error',"没有找到符合条件的教学",'0');
+														}else{
+															console.log("查询成功");
+															httpRet.alertMsg(response,'success',"查询成功",bars);
+															}
+													}
+											});
+										}
+								});	
+						}
+				})
+			}
+	})
+
 	}
 
 /************************************************************
