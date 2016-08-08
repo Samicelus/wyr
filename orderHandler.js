@@ -1175,16 +1175,8 @@ function findInterestCourse(db,courseName,response){
 		if(err){
 			console.log("error:"+err);
 			httpRet.alertMsg(response,'error',err,'0');
-			}else{
-				var courseRegStr = "";
-				for(var i=0;i<courseName.length;i++){
-					if(i == 0){
-						courseRegStr = courseName[i];
-						}else{
-							courseRegStr += "|"+courseName[i];
-							}
-					}
-				var courseReg = new RegExp(courseRegStr);
+		}else{
+				var courseReg = new RegExp(courseName);
 				var condition = {courseName:{$regex:courseReg},state:2};
 				console.log(condition);
 				collection.find(condition).toArray(function(err,bars){
